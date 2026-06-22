@@ -1,29 +1,24 @@
 # DL Gadgets Malta
 
-DL Gadgets is a production-ready v1 electronics catalog and order-request website for Malta. It intentionally uses a request-first flow: a customer browses stock, sends an enquiry, then DL Gadgets confirms final pricing, availability, collection, delivery, and payment directly.
+DL Gadgets is a Next.js electronics store for Malta. It supports two legitimate purchase paths:
+
+- **Online price** products can be added to a persisted cart and paid through Stripe Checkout.
+- **Request price** products stay on the existing enquiry flow, with Resend notification and WhatsApp/email fallback.
+
+The local seed catalog keeps the storefront usable before a CMS is connected. Once valid Sanity environment variables are configured, Sanity becomes the authoritative public catalog: only `active` products are shown and hidden/draft products cannot be purchased.
 
 ## Stack
 
 - Next.js 16 App Router, React 19, TypeScript, Tailwind CSS
-- Local seeded product catalog, generated category and product routes
-- Local WebP product/category imagery documented in `docs/image-sources.md`
-- Sanity-ready product/category schema and GROQ query definitions
-- Resend email delivery with WhatsApp or email fallback
-- Vercel-ready static and server route deployment
-
-## Pages and features
-
-- `/` — brand-led homepage, categories, featured products, trust signals, and order process
-- `/shop` — searchable and filterable product catalog
-- `/shop/[slug]` — static product pages with related products and order prefill
-- `/category/[slug]` — static category listings
-- `/about`, `/contact`, `/request-order`
-- `/api/order-request` — validated request handler with safe, optional email delivery
-- `/sitemap.xml`, `/robots.txt`, route-level metadata and canonical URLs
+- Embedded Sanity Studio at `/studio` for products, categories, images, stock, and paid-order records
+- Stripe-hosted Checkout and a signature-verified Stripe webhook
+- LocalStorage cart with server-side price and stock validation
+- Resend notification support plus WhatsApp/email enquiry fallback
+- Vercel and GitHub ready
 
 ## Local setup
 
-Requirements: Node.js 20.9 or later and npm.
+Requirements: Node.js 20.9+ and npm.
 
 ```powershell
 cd "E:\Larry Lee\dl-gadgets"
@@ -32,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. Run the production checks before release:
+Open `http://localhost:3000`. Production checks:
 
 ```powershell
 npm run lint
@@ -41,57 +36,66 @@ npm run build
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`. Do not commit `.env.local` or any real secret.
+Copy `.env.example` to `.env.local`. Never commit `.env.local`, Stripe keys, Resend keys, or Sanity tokens.
 
-| Variable | Required in production | Purpose |
+| Variable | Required when | Purpose |
 | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | Yes | The final `https://...` URL; used by metadata, canonical URLs, sitemap, and robots. |
-| `NEXT_PUBLIC_WHATSAPP_NUMBER` | Recommended | Digits-only or international number; enables the WhatsApp order fallback. |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | Recommended | Public contact address and mailto fallback. |
-| `ORDER_NOTIFICATION_EMAIL` | For Resend email | Private recipient address for order notifications. |
-| `RESEND_API_KEY` | For Resend email | Private Resend API key. |
-| `RESEND_FROM_EMAIL` | For Resend email | Verified sender, e.g. `DL Gadgets Orders <orders@your-domain.com>`. |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Only with Sanity | Sanity project ID. |
-| `NEXT_PUBLIC_SANITY_DATASET` | Only with Sanity | Dataset name, normally `production`. |
-| `NEXT_PUBLIC_SANITY_API_VERSION` | Only with Sanity | Version date used by Sanity queries. |
-| `SANITY_API_READ_TOKEN` | Only for private Sanity data | Server-only Sanity read token. |
+| `NEXT_PUBLIC_SITE_URL` | Production | Canonical URL, sitemap, robots, Checkout return URLs. |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | Recommended | Digits-only international WhatsApp fallback. |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Recommended | Public email fallback. |
+| `RESEND_API_KEY` | Email delivery | Server-side Resend key. |
+| `ORDER_NOTIFICATION_EMAIL` | Email delivery | Private notification recipient. |
+| `RESEND_FROM_EMAIL` | Email delivery | Verified Resend sender. |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Sanity Studio/store | Sanity project ID. |
+| `NEXT_PUBLIC_SANITY_DATASET` | Sanity Studio/store | Usually `production`. |
+| `NEXT_PUBLIC_SANITY_API_VERSION` | Sanity Studio/store | Sanity query API date. |
+| `SANITY_API_READ_TOKEN` | Private dataset | Server-only read token. |
+| `SANITY_API_WRITE_TOKEN` | Paid order records | Server-only write token used only by the Stripe webhook. |
+| `STRIPE_SECRET_KEY` | Stripe Checkout | Server-only Stripe test/live secret key. |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe integration | Publishable key for future client Stripe features; never place the secret key here. |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook | Signing secret for `/api/stripe/webhook`. |
 
-For a working production order flow, configure either Resend (`ORDER_NOTIFICATION_EMAIL`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`) or `NEXT_PUBLIC_WHATSAPP_NUMBER`; configuring both is recommended. The app never exposes `RESEND_API_KEY` or `ORDER_NOTIFICATION_EMAIL` to the browser.
+## Admin and product management
 
-## Order requests
+After creating a Sanity project and setting its public project ID/dataset, open `/studio`. The embedded Studio lets Larry manage categories and products, upload images to Sanity, set price/sale price, quantity, condition, `requestPrice`, `inStock`, `featured`, specifications, and status.
 
-The API validates name, email/phone format, and a whole-number quantity. If Resend is configured, DL Gadgets receives an email. If it is unavailable or not configured, customers get an explicit WhatsApp fallback (or email fallback when a public contact email is configured). The fallback message contains the product, quantity, and customer contact details.
+For an online-payment product, set all of the following:
 
-Before launch, verify the sender domain in Resend and set `RESEND_FROM_EMAIL`. `orders@resend.dev` is only a development fallback and should not be relied on for production delivery.
+1. `status` to **active**.
+2. `requestPrice` to **false**.
+3. A positive EUR price (or sale price).
+4. `inStock` to **true** and a positive quantity if stock is tracked.
 
-## Product data and Sanity
+Products that do not meet those rules cannot be purchased by the cart or checkout API. Detailed instructions: [docs/admin-guide.md](docs/admin-guide.md).
 
-The initial catalog is in `src/data/products.ts`, derived from the supplied product seed. This is the active fallback source, so the website builds and runs without Sanity credentials.
+## Payments and orders
 
-Product and category imagery is stored locally in `public/products` and `public/placeholders`; no product image is hotlinked. See `docs/image-sources.md` for the asset register and replacement process for verified manufacturer photography.
+The cart sends only product IDs and quantities. `/api/checkout` fetches products again on the server, checks status, request-price, stock, quantity, price, and currency, then creates a Stripe Checkout Session using server-calculated line items. Browser prices are never trusted.
 
-`src/lib/sanity/schema.ts` defines `product` and `category`; `src/lib/sanity/query.ts` holds the GROQ queries. To introduce editor-managed content, create a Sanity Studio, register those schemas, and connect the production data layer before replacing local fallback reads. The Studio is intentionally not embedded in the storefront so this v1 deploy remains stable without CMS configuration.
+`/api/stripe/webhook` reads the raw body and verifies `STRIPE_WEBHOOK_SECRET`. For `checkout.session.completed`, it creates a deterministic paid-order document in Sanity when `SANITY_API_WRITE_TOKEN` is configured, which prevents duplicate email processing. Stripe Dashboard remains the payment source of truth.
 
-## Deploy to GitHub and Vercel
+Use Stripe **test** keys first. Full setup, test commands, and going-live checklist: [docs/stripe-setup.md](docs/stripe-setup.md).
 
-1. Create an empty GitHub repository, then push this project using the commands in the delivery report.
-2. In Vercel, select **Add New → Project**, import the GitHub repository, and set the root directory to `.`.
-3. Vercel detects Next.js automatically. Leave the default build command (`npm run build`) and install command (`npm install`).
-4. In **Project Settings → Environment Variables**, add the production values from the table above. Do not add local `.env.local` to GitHub.
-5. Deploy. Set `NEXT_PUBLIC_SITE_URL` to the final deployment URL, redeploy, and verify `/sitemap.xml`, `/robots.txt`, the shop, and an order request.
-6. Add the confirmed custom domain under **Project Settings → Domains**. Follow the exact DNS record shown by Vercel at the domain registrar, wait for verification, then update `NEXT_PUBLIC_SITE_URL` to the canonical HTTPS domain and redeploy.
+## Images
 
-## Intentionally not included in v1
+Current local product/category fallback imagery is stored under `public/products` and `public/placeholders`. Sanity uploads use Sanity’s controlled image CDN and are rendered with `next/image`; no random images are hotlinked. See [docs/image-sources.md](docs/image-sources.md).
 
-- Card payments, cart, account system, or inventory reservation
-- Embedded Sanity Studio and active remote CMS fetching
-- Automated inventory sync, order dashboard, or tax/shipping engine
-- Final legal policy text; these must be supplied by the business before launch
+## Deploy to Vercel
 
-## Suggested v2 upgrades
+1. Push `main` to GitHub.
+2. Import the repository in Vercel. It auto-detects Next.js.
+3. Add the production variables above under **Settings → Environment Variables**.
+4. Set `NEXT_PUBLIC_SITE_URL` to the production Vercel URL, deploy, then replace it with the custom domain when connected and redeploy.
+5. In Stripe, add the webhook endpoint `https://YOUR_DOMAIN/api/stripe/webhook` and select `checkout.session.completed`.
+6. Verify `/studio`, one request-price product, one priced test-mode product, checkout cancellation, and webhook delivery before using live Stripe keys.
 
-- Verified product photography and CMS-backed image management
-- Embedded Sanity Studio with preview, scheduled publishing, and inventory workflows
-- Order management dashboard, customer notifications, and spam/rate limiting
-- Payment gateway after the desired provider and legal requirements are confirmed
-- Analytics, error tracking, consent banner, and final delivery/returns policy pages
+## GitHub workflow
+
+```powershell
+git status
+git add .
+git commit -m "feat: add DL Gadgets ecommerce checkout and admin"
+git push origin main
+```
+
+See [DELIVERY_REPORT.md](DELIVERY_REPORT.md) for the current delivery status and manual launch checklist.

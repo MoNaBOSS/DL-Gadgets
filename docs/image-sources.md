@@ -11,3 +11,5 @@ The browsing service was unavailable during this redesign, so the initial catalo
 ## Replacement process
 
 Replace category-level fallbacks with verified official manufacturer or licensed product photography as individual product assets become available. Record each future product slug, filename, source URL, and licence/usage note in this document before publishing.
+
+For new stock, upload the verified files through the embedded Sanity Studio rather than adding remote URLs. Sanity stores the asset under the DL Gadgets project and serves it from its managed image CDN; record the original supplier/manufacturer source and licence in the product notes or this register before publishing.
