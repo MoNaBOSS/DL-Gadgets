@@ -1,0 +1,2 @@
+export const productQuery = `*[_type == "product"] | order(featured desc, title asc) { _id, title, "slug": slug.current, brand, condition, quantity, price, requestPrice, shortDescription, description, featured, inStock, "category": category->title, "image": images[0].asset->url }`;
+export const categoryQuery = `*[_type == "category"] | order(title asc) { _id, title, "slug": slug.current, description, featured, "image": image.asset->url }`;

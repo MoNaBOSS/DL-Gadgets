@@ -1,65 +1,9 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Check, MessageCircle, Search, ShieldCheck } from "lucide-react";
+import { CategoryCard, ContactCTA, Container, ProductGrid, SectionHeading, TrustBadges } from "@/components/store";
+import { categories, products } from "@/lib/products";
 
-export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
-}
+export const metadata = { alternates: { canonical: "/" }, openGraph: { url: "/" } };
+
+export default function Home() { const featured = products.filter((product) => product.featured).slice(0, 4); return <><section className="hero-grid overflow-hidden bg-slate-950 py-18 text-white sm:py-24"><Container><div className="grid gap-12 lg:grid-cols-[1.1fr_.9fr] lg:items-center"><div><p className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-200"><span className="size-1.5 rounded-full bg-emerald-300" />Malta online electronics store</p><h1 className="mt-6 max-w-3xl text-5xl font-black tracking-[-.045em] sm:text-6xl lg:text-7xl">Tech that keeps <span className="text-cyan-300">moving.</span></h1><p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">Browse quality devices, request current pricing, and get a clear, helpful response from DL Gadgets. No complicated checkout—just a practical way to get the tech you need.</p><div className="mt-8 flex flex-wrap gap-3"><Link href="/shop" className="inline-flex items-center gap-2 rounded-xl bg-cyan-300 px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-cyan-200">Browse the shop <ArrowRight className="size-4" /></Link><Link href="/request-order" className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Request an order</Link></div><div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-300"><span className="flex items-center gap-2"><Check className="size-4 text-emerald-300" />Quality-checked devices</span><span className="flex items-center gap-2"><Check className="size-4 text-emerald-300" />Malta-based support</span></div></div><div className="relative mx-auto w-full max-w-md"><div className="absolute -inset-6 rounded-full bg-cyan-500/20 blur-3xl" /><div className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[.02] p-5 shadow-2xl"><div className="rounded-2xl border border-white/10 bg-slate-950 p-5"><div className="flex items-center justify-between text-xs font-bold text-slate-300"><span>DL GADGETS // CATALOG</span><span className="text-emerald-300">ONLINE</span></div><div className="mt-6 grid grid-cols-2 gap-3"><Metric number="80+" text="seeded products" /><Metric number="8" text="tech categories" /></div><div className="mt-5 rounded-xl bg-cyan-300 p-5 text-slate-950"><p className="text-xs font-black uppercase tracking-widest">How it works</p><p className="mt-2 text-xl font-black">Browse. Request. Confirm. Collect or deliver.</p></div></div></div></div></div><div className="mt-12"><TrustBadges /></div></Container></section><section className="py-18"><Container><SectionHeading eyebrow="Shop by category" title="The everyday tech, clearly organised.">A focused range of devices and accessories, with current availability confirmed when you enquire.</SectionHeading><div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{categories.map((category) => <CategoryCard key={category.slug} category={category} />)}</div></Container></section><section className="border-y border-slate-200 bg-white py-18"><Container><SectionHeading eyebrow="Featured stock" title="Worth a closer look." action={<Link href="/shop" className="hidden text-sm font-bold text-cyan-700 sm:inline-flex sm:items-center sm:gap-1">View all products <ArrowRight className="size-4" /></Link>}>Listings are updated locally first. Ask us for the final price, condition details, and availability.</SectionHeading><ProductGrid products={featured} /></Container></section><section className="py-18"><Container><div className="grid gap-8 rounded-3xl bg-cyan-50 p-8 lg:grid-cols-[.85fr_1.15fr] lg:p-12"><div><p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-700">A simple order process</p><h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">No checkout friction. Just a clear next step.</h2><p className="mt-4 leading-7 text-slate-600">DL Gadgets confirms the information that matters before you commit: current stock, final price, payment method, and whether collection or delivery works best.</p></div><ol className="grid gap-3 sm:grid-cols-2">{[[Search,"Browse","Explore the current catalog."],[MessageCircle,"Request","Send your details and questions."],[ShieldCheck,"Confirm","We verify price and availability."],[Check,"Collect / deliver","Agree the practical final step."]].map(([Icon, title, text], index) => { const StepIcon = Icon as typeof Search; return <li key={title as string} className="rounded-2xl bg-white p-5 shadow-sm"><span className="text-xs font-black text-cyan-600">0{index + 1}</span><StepIcon className="mt-3 size-5 text-slate-950" /><h3 className="mt-3 font-black text-slate-950">{title as string}</h3><p className="mt-1 text-sm text-slate-500">{text as string}</p></li>; })}</ol></div></Container></section><section className="pb-18"><Container><ContactCTA /></Container></section></>; }
+function Metric({ number, text }: { number: string; text: string }) { return <div className="rounded-xl bg-white/5 p-4"><p className="text-2xl font-black text-cyan-200">{number}</p><p className="mt-1 text-xs text-slate-400">{text}</p></div>; }

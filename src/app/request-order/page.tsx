@@ -1,0 +1,6 @@
+import type { Metadata } from "next";
+import { Container } from "@/components/store";
+import { OrderRequestForm } from "@/components/order-request-form";
+
+export const metadata: Metadata = { title: "Request an order", description: "Request pricing and availability from DL Gadgets. No online card payment required.", alternates: { canonical: "/request-order" }, openGraph: { url: "/request-order" } };
+export default async function RequestOrderPage({ searchParams }: { searchParams: Promise<{ product?: string }> }) { const { product } = await searchParams; return <section className="py-14 sm:py-18"><Container><div className="mx-auto max-w-3xl"><div className="text-center"><p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-700">Order request</p><h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">Request price and availability.</h1><p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-600">Send the details you have. DL Gadgets will confirm the final price, condition, availability, and collection or delivery options before anything is agreed.</p></div><div className="mt-10 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-950/5 sm:p-9"><OrderRequestForm product={product || ""} /></div></div></Container></section>; }

@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { Container } from "@/components/store";
+export default function NotFound() { return <section className="py-24"><Container><div className="mx-auto max-w-xl text-center"><p className="text-sm font-black uppercase tracking-[.22em] text-cyan-700">404</p><h1 className="mt-4 text-5xl font-black tracking-tight">This page is not in the catalog.</h1><p className="mt-5 text-slate-600">The link may have changed, or the product may no longer be listed.</p><Link href="/shop" className="mt-8 inline-flex rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white">Browse the shop</Link></div></Container></section>; }
