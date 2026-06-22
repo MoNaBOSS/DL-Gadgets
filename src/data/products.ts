@@ -59,6 +59,16 @@ const rows: Row[] = [
 ];
 
 const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const categoryImages: Record<CategoryName, string> = {
+  Smartphones: "/products/smartphone-studio.webp",
+  Tablets: "/placeholders/tablet.webp",
+  "Gaming Devices": "/placeholders/gaming.webp",
+  "Security Cameras": "/placeholders/security-camera.webp",
+  Accessories: "/placeholders/accessory.webp",
+  "Smart Devices": "/placeholders/accessory.webp",
+  "Enterprise Devices": "/placeholders/enterprise-device.webp",
+  "Clearance / Used Devices": "/placeholders/smartphone.webp",
+};
 
 export const products: Product[] = rows.map(([title, category, brand, quantity, condition, description], index) => ({
   id: `dlg-${String(index + 1).padStart(3, "0")}`,
@@ -71,8 +81,10 @@ export const products: Product[] = rows.map(([title, category, brand, quantity, 
   requestPrice: true,
   shortDescription: `${condition || "Quality-checked used / refurbished"} ${category.toLowerCase().replace(" / ", " ")} from ${brand}. Request current pricing and availability.`,
   description,
+  image: categoryImages[category],
   featured: [0, 4, 46, 68, 75, 77, 78, 79, 80].includes(index),
   inStock: quantity !== 0,
+  tags: [brand, category, condition || "Used / Refurbished"],
 }));
 
 export const getCategory = (slug: string) => categories.find((category) => category.slug === slug);

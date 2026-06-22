@@ -4,6 +4,8 @@
 
 An original, responsive electronics catalog and manual order-request website for DL Gadgets Malta. The implementation uses the supplied product data and DL Gadgets brand direction; it does not contain Scan Malta source code, assets, text, or branding.
 
+This delivery redesigns the UI into a light, product-first commercial electronics catalog with an ecommerce utility header, image-led hero, local product imagery, upgraded catalog filters, commerce cards, breadcrumbs, and responsive category merchandising.
+
 ## Tech stack
 
 - Next.js 16 App Router and React 19
@@ -25,6 +27,7 @@ An original, responsive electronics catalog and manual order-request website for
 - Clear email-delivered, fallback, and error states
 - SEO metadata, generated OpenGraph image, canonical URLs, sitemap, and robots rules
 - Local catalog works without Sanity or Resend credentials
+- Local WebP product/category fallback imagery with a documented asset register in `docs/image-sources.md`
 
 ## Environment variables
 
@@ -63,8 +66,8 @@ In **Project Settings → Domains**, add the confirmed domain. At the registrar,
 
 ## Final validation
 
-- `npm run lint` — passed with no lint errors after the final audit changes.
-- `npm run build` — passed on Next.js 16.2.9 with no build warnings; TypeScript completed and 103 static pages/routes were generated.
-- Browser verification — passed on desktop, tablet, and mobile widths. Homepage, mobile menu, category filtering, search, product request prefill, 404 page, and footer rendered with no runtime console errors or framework overlays.
+- `npm run lint` — passed after the commercial storefront redesign.
+- `npm run build` — passed on Next.js 16.2.9; TypeScript completed and 103 static pages/routes were generated.
+- Visual route QA — home (desktop/mobile), shop, product detail, category, and prefilled order request return `200`. The redesign has image-led product cards, local Next.js Image assets, responsive utility navigation, and no icon-only product grid.
 - Order API verification — malformed JSON/object input and invalid email return `400`; valid development input is handled gracefully; the WhatsApp fallback URL contains the product, quantity, and customer details.
 - `npm audit --omit=dev --audit-level=moderate` — reports two moderate PostCSS advisories nested under the current Next.js release. The only automated proposal is an unsafe downgrade to Next 9; no safe local remediation is currently available. Monitor for an upstream Next.js patch before launch.

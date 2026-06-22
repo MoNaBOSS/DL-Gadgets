@@ -22,6 +22,7 @@ export type Product = {
   image?: string;
   featured: boolean;
   inStock: boolean;
+  tags?: string[];
 };
 
 export type Category = {

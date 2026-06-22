@@ -6,6 +6,7 @@ DL Gadgets is a production-ready v1 electronics catalog and order-request websit
 
 - Next.js 16 App Router, React 19, TypeScript, Tailwind CSS
 - Local seeded product catalog, generated category and product routes
+- Local WebP product/category imagery documented in `docs/image-sources.md`
 - Sanity-ready product/category schema and GROQ query definitions
 - Resend email delivery with WhatsApp or email fallback
 - Vercel-ready static and server route deployment
@@ -66,6 +67,8 @@ Before launch, verify the sender domain in Resend and set `RESEND_FROM_EMAIL`. `
 ## Product data and Sanity
 
 The initial catalog is in `src/data/products.ts`, derived from the supplied product seed. This is the active fallback source, so the website builds and runs without Sanity credentials.
+
+Product and category imagery is stored locally in `public/products` and `public/placeholders`; no product image is hotlinked. See `docs/image-sources.md` for the asset register and replacement process for verified manufacturer photography.
 
 `src/lib/sanity/schema.ts` defines `product` and `category`; `src/lib/sanity/query.ts` holds the GROQ queries. To introduce editor-managed content, create a Sanity Studio, register those schemas, and connect the production data layer before replacing local fallback reads. The Studio is intentionally not embedded in the storefront so this v1 deploy remains stable without CMS configuration.
 
